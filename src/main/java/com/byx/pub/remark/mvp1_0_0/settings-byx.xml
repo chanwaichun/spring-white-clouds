@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <pluginGroups>
+    </pluginGroups>
+
+    <proxies>
+
+    </proxies>
+
+    <servers>
+        <server>
+            <id>baiyunxiang-baiyunxiang-byx</id>
+            <username>125898689@qq.com</username>
+            <password>Monkey520@_@</password>
+        </server>
+    </servers>
+
+
+    <mirrors>
+        <mirror>
+            <id>aliyunmaven</id>
+            <mirrorOf>a-li-yun</mirrorOf>
+            <name>aliyun-maven</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+
+    </profiles>
+
+
+</settings>

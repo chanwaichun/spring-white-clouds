@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byx.pub.mapper.OrdersSqlMapper">
+
+    <select id="pageManageOrdersList" resultType="com.byx.pub.bean.vo.PageOrdersVo">
+        SELECT
+            o.id,o.order_sn AS orderSn,
+            o.create_time AS createTime,
+            o.payment_time AS paymentTime,
+            d.product_name AS productName,
+            d.img, o.`status`,
+            o.refund_time AS refundTime,
+            o.refund_status AS refundStatus,
+            o.refund_type AS refundType,
+            o.pay_status AS payStatus,
+            o.user_name AS userName,
+            o.user_mobile AS userMobile,
+            o.order_amount AS orderAmount,
+            o.paid_amount AS paidAmount,
+            o.refund_amount AS refundAmount,
+            o.this_payment AS thisPayment,
+            o.surplus_amount AS surplusAmount,
+            o.admin_name AS adminName,
+            o.admin_mobile AS adminMobile,
+            (CASE WHEN (d.protocol = '' OR d.protocol is null) THEN 0 ELSE 1 END)AS protocolStatus
+        FROM
+            orders AS o LEFT JOIN order_detail AS d ON o.order_sn = d.order_sn
+        WHERE
+            1 = 1
+        <if test="queryQo.businessId != null and queryQo.businessId != ''">
+            AND o.business_id = #{queryQo.businessId}
+        </if>
+        <if test="queryQo.adminId != null and queryQo.adminId != ''">
+            AND o.admin_id = #{queryQo.adminId}
+        </if>
+        <if test="queryQo.userId != null and queryQo.userId != ''">
+            AND o.user_id = #{queryQo.userId}
+        </if>
+        <if test="queryQo.productName != null and queryQo.productName != ''  ">
+            AND d.product_name LIKE CONCAT('%',#{queryQo.productName},'%')
+        </if>
+        <if test="queryQo.adminName != null and queryQo.adminName != ''  ">
+            AND o.admin_name LIKE CONCAT('%',#{queryQo.adminName},'%')
+        </if>
+        <if test="queryQo.status != null ">
+            AND o.`status` = #{queryQo.status}
+        </if>
+        <if test=" queryQo.statusList != null and  queryQo.statusList.size() > 0 ">
+            AND
+            <foreach collection="queryQo.statusList" item="status" open="o.`status` in(" close=")" separator=",">
+                #{status}
+            </foreach>
+        </if>
+        <if test=" queryQo.userName != null and queryQo.userName != ''  ">
+            AND o.user_name LIKE CONCAT('%',#{queryQo.userName},'%')
+        </if>
+        <if test=" queryQo.userMobile != null and queryQo.userMobile != ''  ">
+            AND o.user_mobile LIKE CONCAT('%',#{queryQo.userMobile},'%')
+        </if>
+        <if test="queryQo.startTime != null">
+            AND o.create_time &gt;= #{queryQo.startTime}
+        </if>
+        <if test="queryQo.endTime != null">
+            AND o.create_time &lt;= #{queryQo.endTime}
+        </if>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <select id="queryTotalIncome" resultType="java.math.BigDecimal">
+        SELECT
+            (IFNULL( sum( o.paid_amount ), 0 )) AS totalIncome
+        FROM
+            orders AS o WHERE  o.payment in (1,2)
+        <if test="businessId != null and businessId != ''">
+            AND o.business_id = #{businessId}
+        </if>
+        <if test="adminId != null and adminId != ''">
+            AND o.admin_id = #{adminId}
+        </if>
+    </select>
+
+    <select id="queryMonthIncome" resultType="java.math.BigDecimal">
+        SELECT
+            (IFNULL( sum( pr.amount ), 0 )) AS monthIncome
+        FROM
+            orders AS o LEFT JOIN pay_record AS pr ON o.order_sn = pr.order_sn
+        WHERE pr.`status` = 2 AND o.pay_status in (1,2)
+        <if test="businessId != null and businessId != ''">
+            AND o.business_id = #{businessId}
+        </if>
+        <if test="adminId != null and adminId != ''">
+            AND o.admin_id = #{adminId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND pr.success_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND pr.success_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="queryMonthCustomer" resultType="java.lang.Integer">
+        SELECT
+            count(DISTINCT au.user_id ) AS monthCustomer
+        FROM
+            business_user AS au
+        WHERE 1 = 1
+        <if test="businessId != null and businessId != ''">
+            AND au.business_id = #{businessId}
+        </if>
+        <if test="adminId != null and adminId != ''">
+            AND au.admin_id = #{adminId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND au.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND au.create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="queryMonthOrders" resultType="java.lang.Integer">
+        SELECT
+            count( o.id ) AS monthOrders
+        FROM
+            orders AS o
+        WHERE 1 = 1
+        <if test="businessId != null and businessId != ''">
+            AND o.business_id = #{businessId}
+        </if>
+        <if test="adminId != null and adminId != ''">
+            AND o.admin_id = #{adminId}
+        </if>
+        <if test="monthDate != null and monthDate != ''">
+            AND o.first_pay_time &gt;= #{monthDate}
+        </if>
+    </select>
+
+    <select id="queryOrderNum" resultType="java.lang.Integer">
+        SELECT
+            count(DISTINCT pr.order_sn) AS orderNum
+        FROM
+            pay_record AS pr LEFT JOIN orders AS o ON pr.order_sn = o.order_sn
+        WHERE pr.`status` = 2 AND o.pay_status in (1,2)
+        <if test="adminId != null and adminId != ''">
+            AND o.admin_id = #{adminId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND pr.success_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND pr.success_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="queryPayOrderList" resultType="com.byx.pub.bean.vo.PagePayOrderListVo">
+        SELECT
+            pr.order_sn AS orderSn,
+            pr.success_time AS successTime,
+            pr.amount,
+            o.create_time AS orderTime
+        FROM
+            pay_record AS pr LEFT JOIN orders AS o ON pr.order_sn = o.order_sn
+        WHERE pr.`status` = 2 AND o.pay_status IN (1, 2)
+        <if test="adminId != null and adminId != ''">
+            AND o.admin_id = #{adminId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND pr.success_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND pr.success_time &lt;= #{endTime}
+        </if>
+        ORDER BY pr.success_time
+    </select>
+
+
+    <select id="queryNotWcOrderNum" resultType="java.lang.Integer">
+        SELECT count( id ) AS orderNum FROM orders
+        WHERE pay_status IN ( 0, 1 )
+        <if test="adminId != null and adminId != ''">
+            AND admin_id = #{adminId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="queryPayOrderNum" resultType="java.lang.Integer">
+        SELECT count( id ) AS orderNum FROM orders
+        WHERE pay_status IN ( 1, 2 )
+        <if test="adminId != null and adminId != ''">
+            AND admin_id = #{adminId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="queryPayFlowList" resultType="com.byx.pub.bean.vo.ConsultantIncomeVo">
+        SELECT
+            pr.pay_sn AS paySn,
+            pr.order_sn AS orderSn,
+            o.user_name AS userName,
+            o.admin_name AS adminName,
+            (CASE WHEN o.payment = 1 THEN '微信' ELSE '未知' END)AS payment,
+            pr.amount,pr.success_time AS successTime
+        FROM
+            pay_record AS pr LEFT JOIN orders AS o ON pr.order_sn = o.order_sn
+        WHERE
+            pr.`status` = 2
+        <if test="qo.adminId != null and qo.adminId != ''">
+            AND o.admin_id = #{qo.adminId}
+        </if>
+        <if test="qo.paySn != null and qo.paySn != ''">
+            AND pr.pay_sn LIKE CONCAT('%',#{qo.paySn},'%')
+        </if>
+        <if test="qo.orderSn != null and qo.orderSn != ''">
+            AND pr.order_sn LIKE CONCAT('%',#{qo.orderSn},'%')
+        </if>
+        <if test="qo.adminName != null and qo.adminName != ''">
+            AND o.admin_name LIKE CONCAT('%',#{qo.adminName},'%')
+        </if>
+        <if test="qo.userName != null and qo.userName != ''">
+            AND o.user_name LIKE CONCAT('%',#{qo.userName},'%')
+        </if>
+        <if test="qo.startTime != null and qo.startTime != ''">
+            AND pr.success_time &gt;= #{qo.startTime}
+        </if>
+        <if test="qo.endTime != null and qo.endTime != ''">
+            AND pr.success_time &lt;= #{qo.endTime}
+        </if>
+    </select>
+
+
+    <select id="queryPayAmountBySj" resultType="java.math.BigDecimal">
+        SELECT
+            IFNULL( sum( amount ), 0 ) AS payAmount
+        FROM
+            pay_record
+        WHERE
+            `status` = 2
+        <if test="businessId != null and businessId != ''">
+            AND business_id = #{businessId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND success_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND success_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="queryOrderNumBySj" resultType="java.lang.Integer">
+        select count(*) FROM (
+            SELECT
+                order_sn
+            FROM
+                pay_record
+            WHERE
+                `status` = 2
+            <if test="businessId != null and businessId != ''">
+                AND business_id = #{businessId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND success_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND success_time &lt;= #{endTime}
+            </if>
+            GROUP BY order_sn
+        ) AS a
+    </select>
+
+    <select id="queryPayUserNumBySj" resultType="java.lang.Integer">
+        select count(*) FROM (
+            SELECT
+                user_id
+            FROM
+                pay_record
+            WHERE
+                `status` = 2
+            <if test="businessId != null and businessId != ''">
+                AND business_id = #{businessId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND success_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND success_time &lt;= #{endTime}
+            </if>
+            GROUP BY user_id
+        ) AS a
+    </select>
+
+    <select id="queryNoPayOrderAmountBySj" resultType="java.math.BigDecimal">
+        SELECT
+            IFNULL( sum( order_amount ),0) AS noPayAmount
+        FROM
+            orders
+        WHERE
+        `status` = 1
+        <if test="businessId != null and businessId != ''">
+            AND business_id = #{businessId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="queryNoPayOrderNumBySj" resultType="java.lang.Integer">
+        SELECT
+            count(id)
+        FROM
+            orders
+        WHERE
+            `status` = 1
+        <if test="businessId != null and businessId != ''">
+            AND business_id = #{businessId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND create_time &lt;= #{endTime}
+        </if>
+    </select>
+
+
+    <select id="pageRefundOrdersList" resultType="com.byx.pub.bean.vo.PageRefundOrderVo">
+        SELECT
+            o.order_sn AS orderSn,
+            o.refund_sn AS refundSn,
+            o.create_time AS createTime,
+            o.refund_time AS refundTime,
+            d.product_name AS productName,
+            d.img,
+            o.refund_status AS refundStatus,
+            o.paid_amount AS paidAmount,
+            o.refund_amount AS refundAmount,
+            o.order_amount AS orderAmount,
+            o.this_payment AS thisPayment,
+            o.surplus_amount AS surplusAmount,
+            o.user_name AS userName,
+            o.user_mobile AS userMobile,
+            o.admin_name AS adminName,
+            o.admin_mobile AS adminMobile
+        FROM
+            orders AS o
+            LEFT JOIN order_detail AS d ON o.order_sn = d.order_sn
+        WHERE
+            o.refund_status > 0
+        <if test="queryQo.businessId != null and queryQo.businessId != ''">
+            AND o.business_id = #{queryQo.businessId}
+        </if>
+        <if test="queryQo.adminId != null and queryQo.adminId != ''">
+            AND o.admin_id = #{queryQo.adminId}
+        </if>
+        <if test="queryQo.productName != null and queryQo.productName != ''  ">
+            AND d.product_name LIKE CONCAT('%',#{queryQo.productName},'%')
+        </if>
+        <if test="queryQo.adminName != null and queryQo.adminName != ''  ">
+            AND o.admin_name LIKE CONCAT('%',#{queryQo.adminName},'%')
+        </if>
+        <if test=" queryQo.userName != null and queryQo.userName != ''  ">
+            AND o.user_name LIKE CONCAT('%',#{queryQo.userName},'%')
+        </if>
+        <if test=" queryQo.userMobile != null and queryQo.userMobile != ''  ">
+            AND o.user_mobile LIKE CONCAT('%',#{queryQo.userMobile},'%')
+        </if>
+        <if test="queryQo.startTime != null">
+            AND o.create_time &gt;= #{queryQo.startTime}
+        </if>
+        <if test="queryQo.endTime != null">
+            AND o.create_time &lt;= #{queryQo.endTime}
+        </if>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <select id="pagePersonSettlementList" resultType="com.byx.pub.bean.vo.PagePersonSettlementVo">
+        SELECT
+            d.settler_admin_id AS id,
+            MAX(d.main_id) AS mainId,
+            d.business_id AS businessId,
+            MAX(d.business_name) AS businessName,
+            MAX(d.settler_admin_name)AS settlerAdminNName,
+            IFNULL((select role_id from admin where admin_id = d.settler_admin_id),0) AS roleId,
+            SUM(d.settlement_amount) AS settlementAmount,
+            MAX(d.create_time) AS createTime,
+            MAX(d.settlement_date) AS settlementDate
+        FROM
+            settlement_detail AS d
+        where 1 = 1
+        <if test="queryQo.mainId != null and queryQo.mainId != ''">
+            AND d.main_id = #{queryQo.mainId}
+        </if>
+        <if test="queryQo.settlerAdminName != null and queryQo.settlerAdminName != ''">
+            AND d.settler_admin_name LIKE CONCAT('%',#{queryQo.settlerAdminName},'%')
+        </if>
+        <if test="queryQo.adminId != null and queryQo.adminId != ''">
+            AND d.settler_admin_id = #{queryQo.adminId}
+        </if>
+        <if test="queryQo.userId != null and queryQo.userId != ''">
+            AND d.settler_user_id = #{queryQo.userId}
+        </if>
+        <if test="queryQo.orderSn != null and queryQo.orderSn != ''">
+            AND d.order_sn = #{queryQo.orderSn}
+        </if>
+        <if test="queryQo.businessName != null and queryQo.businessName != ''  ">
+            AND d.business_name LIKE CONCAT('%',#{queryQo.businessName},'%')
+        </if>
+        <if test="queryQo.startTime != null">
+            AND d.create_time &gt;= #{queryQo.startTime}
+        </if>
+        <if test="queryQo.endTime != null">
+            AND d.create_time &lt;= #{queryQo.endTime}
+        </if>
+        GROUP BY d.business_id,d.settler_admin_id
+        ORDER BY settlementAmount DESC
+    </select>
+
+
+
+
+</mapper>
+

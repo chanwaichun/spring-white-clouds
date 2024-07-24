@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byx.pub.mapper.ProductSqlMapper">
+
+    <select id="queryPageListProduct" resultType="com.byx.pub.bean.vo.ProductPageListVo">
+        SELECT
+            p.id,
+            p.id AS productId,
+            p.product_type AS productType,
+            p.product_name AS productName,
+            p.product_code AS productCode,
+            p.price,
+            p.business_id AS businessId,
+            p.category_name AS categoryName,
+            b.short_name AS businessName,
+            p.img,
+            p.shelves_status AS shelvesStatus,
+            p.create_time AS createTime,
+            p.sale_num AS saleNum,
+            p.xhs_sku_status AS xhsSkuStatus
+        FROM
+            product AS p LEFT JOIN business AS b on b.id = p.business_id
+        WHERE
+            p.data_status = 1
+        <if test=" queryQo.businessId != null and queryQo.businessId != ''  ">
+            AND p.business_id = #{queryQo.businessId}
+        </if>
+        <if test=" queryQo.productType != null and queryQo.productType != ''  ">
+            AND p.product_type = #{queryQo.productType}
+        </if>
+        <if test=" queryQo.productName != null and queryQo.productName != ''  ">
+            AND p.product_name LIKE CONCAT('%',#{queryQo.productName},'%')
+        </if>
+        <if test=" queryQo.businessName != null and queryQo.businessName != ''  ">
+            AND ( b.short_name LIKE CONCAT('%',#{queryQo.businessName},'%') OR b.full_name LIKE CONCAT('%',#{queryQo.businessName},'%') )
+        </if>
+        <if test=" queryQo.shelvesStatus != null ">
+            AND p.shelves_status = #{queryQo.shelvesStatus}
+        </if>
+        <if test="queryQo.startTime != null">
+            AND p.create_time &gt;= #{queryQo.startTime}
+        </if>
+        <if test="queryQo.endTime != null">
+            AND p.create_time &lt;= #{queryQo.endTime}
+        </if>
+        ORDER BY p.create_time DESC
+    </select>
+
+
+
+
+</mapper>
+

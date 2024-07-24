@@ -1,0 +1,10 @@
+1.优化版(https://axhub.im/ax9/63daa5c708068d1c/#g=1&id=sffb7w&p=%E5%95%86%E5%93%81%E8%AF%A6%E6%83%85%E9%A1%B5)
+2.定时取消24小时未支付订单。
+3.电子传单 转发版。
+4.转发数据页面展示。
+
+上线需要配置：
+  thymeleaf:
+    cache: false
+    prefix: classpath:/index/
+    suffix: .html

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.com">
+<head>
+    <meta charset="UTF-8">
+    <title>供应商转发数据</title>
+</head>
+
+<body >
+    <table style="width: 100%; border-collapse: collapse">
+        <tr>
+            <td  style="width: 40%; border-collapse: collapse">
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse">
+                    <tr>
+                        <td  style="border-bottom: black 3px double; width: 20%">电子传单名称</td>
+                        <td  style="border-bottom: black 3px double; width: 20%">商家名称</td>
+                        <td  style="border-bottom: black 3px double; width: 20%">供应商</td>
+                        <td  style="border-bottom: black 3px double; width: 20%">拉新人数</td>
+                        <td  style="border-bottom: black 3px double; width: 20%">成交人数</td>
+                    </tr>
+
+                    <tr th:each="relay:${relayList}">
+                        <td th:text="${relay.flyerName}"></td>
+                        <td th:text="${relay.flyerSjName}"></td>
+                        <td th:text="${relay.supplierName}"></td>
+                        <td th:text="${relay.pullNum}"></td>
+                        <td th:text="${relay.dealNum}"></td>
+                    </tr>
+                </table>
+            </td>
+            <td  style="width: 5%; border-collapse: collapse" />
+            <td  style="width: 55%; border-collapse: collapse">
+                <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse">
+                    <tr>
+                        <td  style="border-bottom: black 3px double; width: 20%">订单号</td>
+                        <td  style="border-bottom: black 3px double; width: 20%">成交商品</td>
+                        <td  style="border-bottom: black 3px double; width: 15%">商家名称</td>
+                        <td  style="border-bottom: black 3px double; width: 10%">供应商</td>
+                        <td  style="border-bottom: black 3px double; width: 10%">下单人</td>
+                        <td  style="border-bottom: black 3px double; width: 15%">下单手机</td>
+                        <td  style="border-bottom: black 3px double; width: 10%">成交时间</td>
+                    </tr>
+
+                    <tr th:each="dealDetail:${relayDealDetailList}">
+                        <td th:text="${dealDetail.orderSn}"></td>
+                        <td th:text="${dealDetail.orderProduct}"></td>
+                        <td th:text="${dealDetail.relaySjName}"></td>
+                        <td th:text="${dealDetail.relayName}"></td>
+                        <td th:text="${dealDetail.inviteeName}"></td>
+                        <td th:text="${dealDetail.inviteePhone}"></td>
+                        <td th:text="${dealDetail.dealTime}"></td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

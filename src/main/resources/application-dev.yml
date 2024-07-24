@@ -1,0 +1,136 @@
+
+server:
+  port: 10097
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://1.12.73.201:31306/byx?verifyServerCertificate=false&useSSL=false&requireSSL=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: xPxW]zHWPPao
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write_dates_as_timestamps: false
+  mvc:
+    format:
+      date: yyyy-MM-dd HH:mm:ss
+  redis:
+    host: 1.12.73.201
+    password: xPxW]zHWPPao
+    database: 2
+    port: 31379
+    timeout: 300ms
+  thymeleaf:
+    cache: false
+    prefix: classpath:/index/
+    suffix: .html
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      location: D:/work/img
+      max-file-size: 2MB
+      max-request-size: 20MB
+      resolve-lazily: false
+  resources:
+    static-locations: file:${spring.servlet.multipart.location}
+
+logging:
+  config: classpath:logback-spring.xml
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:/resources/com/**Mapper.xml
+
+#是否开启鉴权(本地测试false),token过期时间
+token:
+  check:
+    status: true
+  effective:
+    admin: 86400
+    user: 86400
+
+#企业微信参数:
+CorpWeChat:
+  corpId: wwb0e68e5841731c01
+  callbackUrl: https://white-clouds-dev.dongliuxinli.com/white/clouds/manage/v1/admin/crop/callback
+  suite:
+    suiteId: ww83306783a23f52f3
+    secret: mFmOzQ85NqH0aObpg_SUBhSzvfW0bIaSBiWpWySXxGk
+    token: vf5gtkSPdOAz
+    encodingAESKey: gSAGr9UAMT5DsePhMzJsV5DTHuqbvMLqplo1FLHdft6
+  login:
+    suiteId: ww75ce69deea48ae5e
+    secret: fCATXoxV5T5eKpo15kp74w82EviQ3wmX3beV8gCZY84
+
+WeChat:
+  #网页版
+  web:
+    #生产：wx8635247064d4abec
+    appid: wx37aa1cee252818b8
+    #生产：b7f5d8e815d02e9ba578100257a72f76
+    secret: 73d8f10cf17675f78ea263a2a7fedf32
+    callbackUrl: https://white-clouds-dev.dongliuxinli.com/white/clouds/manage/v1/admin/WeChat/callback
+    redirectPage: https://manage-web-dev.dongliuxinli.com/#/login
+  #小程序版 生产：wxb29ccd16efbf2e1c
+  AppId: wxbdbbfa7707a01926
+  #secret 生产：7dbfe4fbdce1f02da6fff0f82f64f161
+  AppSecret: 81b531d01767e54f94942ceda2dfc76b
+  #商户号 生产：1644123904
+  mchId: 1653707508
+  #API证书序列号
+  mchSerialNo: 4A7132F973D61B821BC366EFA74226CBFF7BF0EB
+  #apiV3秘钥
+  apiV3Key: 91b6ddde42b922f38e08c0da6159bfbe
+  #API证书私钥 apiclient_key.pem里的内容
+  privateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC42rQHbink4PZ/
+    UjW1yGd1dbjvE6Dv8R+pnoMXENVVFwsl1l/zcFE0NcI3p8bgVNNLcogRQDtCIDHW
+    ZzRWwkAb7ypuVHJZfhwPKks1JRWMw7NRyL05HOu8/rOg5H1HBS3JybuzGnCnebqj
+    qyfyFhtUSmdYcOjtK12HJLaQLGK6gjiobucmMh6LTY9WSMfFFnwLoH3Z4SyCn+DO
+    70SOPfb/CHz5ZyGs3MjDlpsvGqrr55lURrMTpRXZAVFrz7QGOKW4UWS2bsX0EgYS
+    T4sJiuzQzG1x2GuzZ4vL0SvLNGjpKeouA8TFUKzsN7EfDsz+ATRiX8PierpW2Grc
+    ubNTYe6dAgMBAAECggEBAIxQZirlsiMrp6/JZT+Q2QdNzoya56R58MC9s1/ExUoL
+    bcjQypBshxcMX1oDnnAVszUnwKTnjpOJAItwV0grtqH9jsWkkA/iK8ZPIjs65Pqu
+    aeUAbLF3hHE3HH5aMcXA5pqu6CzxOuXE/qjReEbIBQKcX4nAWu375sh4U6NoLaDH
+    gZ3g+tHjM2rNLY5/wjgDzdEeR0D+k5xIV5Txm3GIBwUAg5t8kBd6VzbN9m8zw5U2
+    4YQNhGXdrcDABd0XAY9Kw2x4n//+LE/xnGpasdFtUA4ZoHgbY2iok7qedh1PibzG
+    VefSaETeZE3meI/KLHTx6dUsYd8si8hXnGDWOTCI8AECgYEA2i6Rc/rM/TUJycWG
+    doFt4Kf8df1Nbms8sL5Byk97getal1WSkI/SqmcSOc8T35MMIutwK+0VuHflUG0M
+    07E8YpTNhwZG5eYkpF9OWrQlBeJRZ7+mbmDJjCeidJ8tjMh7kk+j9Cgd9I6O2fvJ
+    qytNwf0pW4bTO4LGlLJrHDbadJ0CgYEA2OVIVOfeBEWEIKdikIrcS7Ocfq30NYIh
+    BPRWPPWDGwD4ZlWuHfaQks1q3AMQy1zWh13Mon13ubBKAdqe3DlMKFdwflOwYVXP
+    GZIyiheLv911cN76TOxKloKBUU93BRGaOoZH77NSuSBAdCKLucMlvRn5jeVx+x0L
+    i1aKRm0jQgECgYB2g5sw48gbtoa1mlz63D1iLf293bUEyK1z2DUGfvw4yy4vTCVL
+    70PgmhJVYn2KEWcjRL5urd8Bj+b5M/MmvnxtlCS8NpWmZcf7nWWDcZ02wAO2Fm2C
+    QYLZZeIh9SEZ+wDcrfQCORRkdld0Ywfdua0INcsUU31EMzpJJU13SviJJQKBgQDN
+    6wB8+5Wg4I7MoZ3GNM9pX6CX9HcBxgWrOn4VadGK9aTfI0EnWUtw1G07a/2p1P4n
+    jjoVmqDsPh5FHFXuJsfTFRDMHpA6GMmCMXah/DDFe29gNZHVLhCyTDySAauxuECA
+    h7QMMme7Mo9+sr2NI2TU37A5szg/fBfVtdeZfUwYAQKBgEu8Z9yfPmOa2emLCfCi
+    DLlwoVR7dPH6JnWOuWtm2hTQX5ayouRMICSzEIFeKcfcxadAUgGs0cVtKAv48ZPK
+    9lXXQKvYGaUTKMuTreLw5Q3ZbdkpbnvjoSmMPq78e0baljyf9olO6WCqs5DoF5tv
+    Q48oDx+VvGrF/H4E1FxkcMb2
+  #回调通知地址
+  notifyUrl: https://white-clouds-dev.dongliuxinli.com/white/clouds/front/user/v1/wx/pay/notify
+  #退款回调通知地址
+  refundnotifyUrl: https://white-clouds-dev.dongliuxinli.com/white/clouds/front/user/v1/wx/refund/notify
+  #消息模板
+  msgTid:
+    #客户下单通知
+    placeOrder: msLpmtREbj8ciRYKGJL2klmsi_0A8AE9w91LybDwy8c
+
+#腾讯云相馆配置
+cos:
+  secretId: AKIDsc9XmpbN0QispZ3LQGrNjswoTt31tY0F
+  secretKey: 4wb3NVR9h4HHAtTq5PemrodGgx77tSq2
+  region: ap-guangzhou
+  bucketName: static-dev-1318113219
+  path: https://static-dev-1318113219.cos.ap-guangzhou.myqcloud.com/
+
+
+
+
+
